@@ -89,6 +89,7 @@ sc config vgc start= disabled &
 sc config vgk start= disabled & 
 sc stop vgc  
 sc stop vgk  
+taskkill /F /IM vgk.exe
 pause
 exit
 :choice2
