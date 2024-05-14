@@ -39,16 +39,24 @@ echo    :       :: :: :    :   :::  :    : :: : :  : :: : :
 echo                    Brought to you by @GabriWar                                                   
 echo .  
 :choice
-if "%~1"=="-k" goto :Killtasks
+echo [1] Kill tasks
+echo [2] Enable Vanguard
+echo [3] Soft enable Vanguard
+echo [4] Disable Vanguard
+echo [5] Soft disable Vanguard
+echo [6] Check the status of Vanguard
+if "%~1"=="-k" goto :killtasks
 for /f "delims=: tokens=*" %%A in ('findstr /b ::: "%~f0"') do @echo(%%A   
-set /P c=Do you want to [K]ill tasks, [E]nable, [D]isable or [C]heck the status of Vanguard?[K/E/D/C]?
-if /I "%c%" EQU "E" goto :enable
-if /I "%c%" EQU "D" goto :disable
-if /I "%c%" EQU "C" goto :check
-if /I "%c%" EQU "K" goto :Killtasks
+set /P c= ">"
+if /I "%c%" EQU "1" goto :killtasks
+if /I "%c%" EQU "2" goto :enable
+if /I "%c%" EQU "3" goto :softenable
+if /I "%c%" EQU "4" goto :disable
+if /I "%c%" EQU "5" goto :softdisable
+if /I "%c%" EQU "6" goto :check
 goto :choice
 ::--------------------------------------
-:Killtasks
+:killtasks
 set loopcount=6
 :loop
 for /F %%T in (tokill.txt) do (
@@ -70,6 +78,8 @@ if /I "%c%" EQU "N" exit
 if /I "%c%" EQU "Y" cls & goto :choice
 ::--------------------------------------
 :enable
+sc start vgc
+sc start vgk
 sc config vgk start= system
 sc config vgc start= demand
 goto:choice2
@@ -77,9 +87,8 @@ goto:choice2
 :disable
 sc config vgc start= disabled & 
 sc config vgk start= disabled & 
-net stop vgc  
-net stop vgk  
-taskkill /IM vgtray.exe
+sc stop vgc  
+sc stop vgk  
 pause
 exit
 :choice2
@@ -101,6 +110,15 @@ ping -n 2 127.0.0.1>nul
 echo 1
 ping -n 2 127.0.0.1>nul
 shutdown.exe /r /t 00
- 
 :no
+exit
+::--------------------------------------
+:softdisable
+sc stop vgk
+pause
+exit
+:softenable
+sc start vgk
+sc start vgc
+pause
 exit
